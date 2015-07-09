@@ -3,3 +3,4 @@
 /createKey.sh
 /compressAndSign.sh
 /compressAndSignAll.sh
+/target/
