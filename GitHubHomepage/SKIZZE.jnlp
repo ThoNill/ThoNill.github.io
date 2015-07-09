@@ -9,7 +9,7 @@
     <j2se version="1.8+" initial-heap-size="32m" max-heap-size="128m" />
     <property name="jnlp.versionEnabled" value="false"/>
     <property name="jnlp.packEnabled" value="true"/>
-    <jar href="SKIZZE.jar"/>
+    <jar href="SKIZZE.pack.gz"/>
   </resources>
  <application-desc main-class="main.Main">
  </application-desc>
