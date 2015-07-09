@@ -1,0 +1,5 @@
+/keystore.jks
+/pom.xml
+/createKey.sh
+/compressAndSign.sh
+/compressAndSignAll.sh

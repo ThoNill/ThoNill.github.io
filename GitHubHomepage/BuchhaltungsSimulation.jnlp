@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<jnlp spec="1.0+" codebase="http://thonill.github.io/GitHubHomepage" 
+      href="BuchhaltungsSimulation.jnlp">
+ <information>
+    <title>Groebner Basen</title>
+    <vendor>Thomas Nill</vendor>
+ </information>
+ <resources>
+    <j2se version="1.8+" initial-heap-size="32m" max-heap-size="128m" />
+    <property name="jnlp.versionEnabled" value="false"/>
+    <property name="jnlp.packEnabled" value="true"/>
+    <jar href="BuchhaltungsSimulation.jar"/>
+ </resources>
+ <application-desc main-class="main.MainFrame">
+ </application-desc>
+</jnlp>
