@@ -1,7 +1,7 @@
 
 function loadXMLPage(pages, name,initFunction) {
 	$.ajax({
-		url : 'pages/' + name + '.xml',
+		url : 'GitHubHomepage/JanusJavascript/pages/' + name + '.xml',
 		data : '',
 		success : function(data) {
 			var page = preparePage(data);
