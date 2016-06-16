@@ -1,0 +1,14 @@
+<DIALOG>
+	<STRING name='a' />
+	<STRING name='b' />
+	<VBOX>
+	<TABS>
+		<TAB title='Tab a'>
+			<TEXTFIELD model='a' />
+		</TAB>
+		<TAB title='Tab b'>
+			<TEXTFIELD model='b' />
+		</TAB>
+	</TABS>
+	</VBOX>
+</DIALOG>

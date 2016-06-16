@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head>
+<!-- 
+http://www.metroui.org/
+<link href="metro/css/metro.css" rel="stylesheet">
+<link href="metro/css/metro-icons.css" rel="stylesheet">
+<link href="metro/css/metro-responsive.css" rel="stylesheet">
+<link href="metro/css/metro-schemes.css" rel="stylesheet">
+ -->
+ 
+<link href="http://www.metroui.org/css/metro.css" rel="stylesheet">
+<link href="http://www.metroui.org/css/metro-icons.css" rel="stylesheet">
+<link href="http://www.metroui.org/css/metro-responsive.css" rel="stylesheet">
+<link href="http://www.metroui.org/css/metro-schemes.css" rel="stylesheet">
+
+<script src="http://www.metroui.org/js/jquery-2.1.3.min.js"></script>
+<script src="http://www.metroui.org/js/metro.js"></script>
+<!-- <link rel="stylesheet" href="framework.css"> -->
+</head>
+<body>
+	<div class="container page-content">
+		<div id="menu">Hallo</div>
+
+		<DIV class='tabcontrol2' data-role='tabcontrol' id='demo'>
+			<ul class='tabs'>
+				<li><a href='#guiTab'>Oberfl&auml;che</a></li>
+				<li><a href='#modelTab'>Datenmodel</a></li>
+				<li><a href='#guiSourceTab'>GUI Beschreibung</a></li>
+			</ul>
+			<DIV class='frames'>
+				<DIV class='frame' id='guiTab'>
+					<div id="place">Hallo</div>
+				</DIV>
+				<DIV class='frame' id='modelTab'>
+					<code id="dataResult"></code>
+				</DIV>
+				<DIV class='frame' id='guiSourceTab'>
+					<code id="guiResult"></code>
+				</DIV>
+			</DIV>
+		</div>
+	</div>
+</body>
+<script src="testdaten.js"></script>
+<script src="framework.js"></script>
+<script src="demo.js"></script>
+<script>
+	/*
+	 function showResult( text ) {
+	 var place = document.getElementById('place');
+	 if (place != null) {
+	 place.innerHTML = text;
+	 }
+	 }
+
+
+
+	 var text = "<DIALOG><VBOX><TEXTFIELD/></VBOX></DIALOG>";
+
+	 parser = new DOMParser();
+	 xmlDoc = parser.parseFromString(text,"text/xml");
+
+	 var test2Dialog = buildPage(xmlDoc.documentElement);
+
+	 showResult( test2Dialog.fill({name: 'TOLL'}));
+	 */
+</script>
+</html>

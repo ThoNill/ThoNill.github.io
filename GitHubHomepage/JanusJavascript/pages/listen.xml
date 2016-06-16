@@ -1,0 +1,15 @@
+<DIALOG>
+	<TABLE name='liste'>
+		<COLUMN name='value' />
+		<COLUMN name='text' />
+	</TABLE>
+	<VBOX>
+		<COMBO model='liste' />
+		<LIST model='liste' />
+		<RADIO model='liste' />
+		<SHOWTABLE model='liste'>
+			<SHOWCOLUMN name='value' header='Wert' />
+			<SHOWCOLUMN name='text' header='Text' />
+		</SHOWTABLE>
+	</VBOX>
+</DIALOG>

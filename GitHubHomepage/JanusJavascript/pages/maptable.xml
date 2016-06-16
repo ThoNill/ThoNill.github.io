@@ -1,0 +1,13 @@
+<DIALOG>
+	<MAPTABLE name='map' source='b'>
+		<ENTRY value='a' text='Text a' />
+		<ENTRY value='b' text='Text b' />
+		<ENTRY value='c' text='Text c' />
+	</MAPTABLE>
+	<VBOX>
+		<COMBO model='map' />
+		<LIST model='map' />
+		<RADIO model='map' />
+		<LABEL title='Das ist ein Label' />
+	</VBOX>
+</DIALOG>

@@ -1,0 +1,6 @@
+<DIALOG>
+	<STRING name='a' default='1' />
+	<VBOX>
+		<TEXTFIELD model='a' />
+	</VBOX>
+</DIALOG>

@@ -1,0 +1,20 @@
+<DIALOG>
+	<BEAN name='menuBeanl' class='menuauswahl'>
+		<CALL name='tabs' command='tabs' />
+		<CALL name='textfield' command='textfield' />
+		<CALL name='maptable' command='maptable' />
+		<CALL name='listen' command='listen' />
+		<CALL name='seite1' command='seite1' />
+	</BEAN>
+	<MENUBAR>
+		<MENU title='Beispiele'>
+			<MENUITEM title='Tabs' model='tabs' />
+			<MENUITEM title='Textfeld' model='textfield' />
+			<MENUITEM title='Map' model='maptable' />
+		</MENU>
+		<MENU title='eins'>
+			<MENUITEM title='Seite 1' model='textfield' />
+		</MENU>
+	</MENUBAR>
+	<BUTTON model='listen' title='Ansichten einer Liste' />
+</DIALOG>
