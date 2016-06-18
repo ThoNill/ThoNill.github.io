@@ -1,14 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-<!-- 
-http://www.metroui.org/
-<link href="metro/css/metro.css" rel="stylesheet">
-<link href="metro/css/metro-icons.css" rel="stylesheet">
-<link href="metro/css/metro-responsive.css" rel="stylesheet">
-<link href="metro/css/metro-schemes.css" rel="stylesheet">
- -->
- 
+
 <link href="http://www.metroui.org/css/metro.css" rel="stylesheet">
 <link href="http://www.metroui.org/css/metro-icons.css" rel="stylesheet">
 <link href="http://www.metroui.org/css/metro-responsive.css" rel="stylesheet">
@@ -16,21 +9,38 @@ http://www.metroui.org/
 
 <script src="http://www.metroui.org/js/jquery-2.1.3.min.js"></script>
 <script src="http://www.metroui.org/js/metro.js"></script>
-<!-- <link rel="stylesheet" href="framework.css"> -->
+
 </head>
 <body>
 	<div class="container page-content">
-		<div id="menu">Hallo</div>
-
+		<div id="menu">Leider fehlt das Menu</div>
+		<div id="error" style="display: none" ></div>
 		<DIV class='tabcontrol2' data-role='tabcontrol' id='demo'>
 			<ul class='tabs'>
 				<li><a href='#guiTab'>Oberfl&auml;che</a></li>
 				<li><a href='#modelTab'>Datenmodel</a></li>
 				<li><a href='#guiSourceTab'>GUI Beschreibung</a></li>
+				<li><a href='#licenseTab'>Metro UI Lizenz</a></li>
 			</ul>
 			<DIV class='frames'>
 				<DIV class='frame' id='guiTab'>
-					<div id="place">Hallo</div>
+					<div id="place">
+					<h3>Willkommen auf dieser Demoseite</h3>
+					
+					Mit einer Menüauswahl kommen Sie zu verschiedenen Seiten, die
+					Ihnen JanusJS vorstellen sollen.
+					<p>
+					Die Beschreibung der Seiten erfolgt in XML, ein Dialog besteht aus dem Datenmodel und den Komponenten der Benutzeroberfläche.
+					Diese Teile werden jeweils in den Reitern <b>Datenmodel</b> und <b>GUI-Beschreibung</b> angezeigt.
+					
+					
+					<p>
+					
+					Mit freundlichen Gr&uuml;&szlig;en <br><br>
+					
+					Thomas Nill
+					
+					</div>
 				</DIV>
 				<DIV class='frame' id='modelTab'>
 					<code id="dataResult"></code>
@@ -38,6 +48,9 @@ http://www.metroui.org/
 				<DIV class='frame' id='guiSourceTab'>
 					<code id="guiResult"></code>
 				</DIV>
+				<DIV class='frame' id='licenseTab'>
+					<a href="https://metroui.org.ua/license.html" >zur Metro UI Lizenz</a>
+				</DIV>			
 			</DIV>
 		</div>
 	</div>
@@ -45,25 +58,5 @@ http://www.metroui.org/
 <script src="testdaten.js"></script>
 <script src="framework.js"></script>
 <script src="demo.js"></script>
-<script>
-	/*
-	 function showResult( text ) {
-	 var place = document.getElementById('place');
-	 if (place != null) {
-	 place.innerHTML = text;
-	 }
-	 }
 
-
-
-	 var text = "<DIALOG><VBOX><TEXTFIELD/></VBOX></DIALOG>";
-
-	 parser = new DOMParser();
-	 xmlDoc = parser.parseFromString(text,"text/xml");
-
-	 var test2Dialog = buildPage(xmlDoc.documentElement);
-
-	 showResult( test2Dialog.fill({name: 'TOLL'}));
-	 */
-</script>
 </html>

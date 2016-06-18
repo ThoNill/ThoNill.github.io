@@ -5,9 +5,9 @@
 		<ENTRY value='c' text='Text c' />
 	</MAPTABLE>
 	<VBOX>
+		<LABEL title='Eine fest vorgegeben Auswahl, auf drei Arten dargestellt.' />
 		<COMBO model='map' />
 		<LIST model='map' />
 		<RADIO model='map' />
-		<LABEL title='Das ist ein Label' />
 	</VBOX>
 </DIALOG>

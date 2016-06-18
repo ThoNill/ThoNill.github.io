@@ -1,4 +1,37 @@
 
+var JanusJS = (function () {
+	
+	
+	
+
+
+function createIfThen (element, DataSources) {
+	if (element.attributes.if && element.attributes.at) {
+		var stringToGoIntoTheRegex =element.attributes.if;
+		
+		var dataElement = DataSources[element.attributes.at];
+		var re =  {
+				regex : new RegExp(stringToGoIntoTheRegex),
+				dataElement : dataElement,
+				element : element,
+				status: "valid",
+				valueChanged : function ( ev ) {
+	            	 this.element.valueChanged(ev);
+	            },
+	            isOk : function () {
+	            	return this.regex.test(dataElement.value);
+	            }
+		};
+		element.ifThen = re;
+		dataElement.addListener(re);
+	}
+	if (element.childs) {
+		for (var ci = 0;ci<element.childs.length;ci++) {
+			var child = element.childs[ci];
+			createIfThen(child, DataSources);
+		}
+    }
+}
 
 function doNothing () {
 }
@@ -33,9 +66,6 @@ function addListener ( child) {
 
 var classFunctions = {};
 
-function addClassFunction( name , f) {
-	classFunctions[name] = f;
-}
 
 function callClassFunction ( name , command, values) {
 	return (classFunctions[name])( command, values);
@@ -43,11 +73,8 @@ function callClassFunction ( name , command, values) {
 
 var dialogValue = {}
 
-//var DataSources = {}
+// var DataSources = {}
 
-function getModelElement() {
-	return this.DataSources[this.attributes['model']];
-}
 
 function newDataSource ( name , sourceType, attributes, DataSources) {
          var source = Object.create(sourceType);
@@ -329,29 +356,54 @@ var dataTag = {
                      for (var i=0;i < this.childs.length;i++) {
                         this.addListener(this.childs[i]);
                      }
+                     this.addListener(this.currentRow);
                }, 
                refresh : function() { 
                       this.updateData();
                       this.fireCurrentRow();
                }, 
-               configure : function() {
+               configure : function( DataSources) {
                      this.list = {
                          currentRow : 0,
                          data : [],
                          findValue : findValue
                      };
                      for (var i=0;i < this.childs.length;i++) {
-                        this.childs[i].setList(this.list);
+                        this.childs[i].setList(this);
                      };
                      this.firstColName = this.childs[0].colName;
                      this.calculateValue = function (ev) {
                         return this.list.findValue(this.firstColName, ev.value);
                      }
+                     
+                     this.currentRow = newDataSource (this.name +".currentRow" ,dataTag.TABLE, {}, DataSources);
+                     this.currentRow.table = this;
+                     this.currentRow.setValue = function ( value) {
+                         this.table.setCurrentRow(value);
+                     };
+                     this.currentRow.calculateValue = function (ev) {
+                         return this.table.list.currentRow;
+                     }
+                     this.currentRow.status = 'valid';
+                     this.currentRow.updateData = doNothing;
+                     this.currentRow.childs = [];
+                     this.currentRow.createEvent = function( hint ) {  
+                         var ev = {
+                            value : this.table.list.currentRow,
+                            source: this,
+                            hint: hint,
+                            currentRow : this.table.list.currentRow,
+                            data : this.table.list.data
+                         };
+                         return ev;
+                      };
+                     
+                                        
                      this.status = 'valid';
                },
               updateData: function() {
             	       if (this.doUpdate) {
-                       var rowCount = getRandomInt(10,30);
+                       var rowCount = getRandomInt(3,10);
                        this.list.currentRow = 0; 
                        this.list.data = []; 
                        for (var r=0;r < rowCount;r++) {
@@ -369,8 +421,13 @@ var dataTag = {
              },
 
     COLUMN : { 
-               setList : function ( list ) {
-                  this.list =  list;
+    	  		setValue : function ( value) {
+    	  			this.list.findValue(this.colName, value);
+    	  			this.table.fireCurrentRow();
+    	  		},
+               setList : function ( table ) {
+            	  this.table = table; 
+                  this.list =  table.list;
                },
                bind : function(DataSources) {}, 
                refresh : function() {}, 
@@ -534,7 +591,7 @@ function replaceValues ( template, values ) {
 	}
    var erg = template;  
  
-   //  in notwenig, damit auch Properties von prototype genommen werden
+   // in notwenig, damit auch Properties von prototype genommen werden
    for (var key in values) {
        erg = replaceOneValue(erg,key,values[key]);
    }
@@ -560,15 +617,27 @@ function addId( values) {
         	newValues.title = this.attributes.title;
         }
         
+        newValues.innerStyle = '';
+         
+        if (this.ifThen) {
+        	if (!this.ifThen.isOk()) {
+        		newValues.innerStyle = newValues.innerStyle + 'display : none;';
+        	} 
+        }
+        
+        newValues.styleOut = ' style=\"' + newValues.innerStyle +'\" ';
+        
         return newValues;
 }
 
 function simpleFill( values) {
+		this.needUpdate = false;
         var newValues = this.addId(values); 
         return this.fillTemplate(this.tagName,newValues);
 }
 
 function startChildEndFill( values) {
+		this.needUpdate = false;
         var newValues = this.addId(values); 
         var start = this.fillTemplate('start',newValues);
         var end = this.fillTemplate('end',newValues);
@@ -585,10 +654,12 @@ function startChildEndFill( values) {
 }
 
 function noFill ( values ) {
+	this.needUpdate = false;
 	return "";
 }
 
 function fillFromList( values) {
+	this.needUpdate = false;
     var newValues = this.addId(values);
     var list = this.getModelElement().list;
     
@@ -635,6 +706,7 @@ function fillFromList( values) {
 }
 
 function fillRowsFromList( values) {
+	this.needUpdate = false;
     var newValues = this.addId(values);
     var list = this.getModelElement().list;
     
@@ -665,12 +737,6 @@ function fillRowsFromList( values) {
 }
 
 
-function setCurrentRow( divID, row ) {
-	//alert( model + row );
-	getModelElementFromDivID(divID).setCurrentRow(row);
-	updateGui();
-	return false;
-}
 
 function newGuiTag( tagName, templateHash ) {
      var obj = new Object();
@@ -685,68 +751,69 @@ function newGuiTag( tagName, templateHash ) {
      return obj;
 }  
 
+
 var guiTag = {};
 guiTag.DIALOG  = newGuiTag("DIALOG", { start: "<div id='${id}' >", child: "${child}", end: "</div>" });
 guiTag.DIALOG.fill  = startChildEndFill;
 guiTag.DIALOG.configure  = doNothing;
 
 
-guiTag.TEXTFIELD = newGuiTag("TEXTFIELD", { TEXTFIELD: "<div class='input-control text'><input type='text' name='${model}' value='${value}' /></div>" });
+guiTag.TEXTFIELD = newGuiTag("TEXTFIELD", { TEXTFIELD: "<div  id='${id}' class='input-control text'  ${styleOut}  ><input type='text' name='${model}' value='${value}' onchange=\"JanusJS.setModelElementValue('${id}',this.value);return true;\"  /></div>" });
 guiTag.TEXTFIELD.fill = simpleFill;
 guiTag.TEXTFIELD.configure  = doNothing;
 
-guiTag.LABEL = newGuiTag("LABEL", { LABEL: "<div>${title}</div>" });
+guiTag.LABEL = newGuiTag("LABEL", { LABEL: "<div  id='${id}'  ${styleOut} >${title}</div>" });
 guiTag.LABEL.fill = simpleFill;
 guiTag.LABEL.configure  = function () {
 	this.title = this.attributes.title;
 };
 
-guiTag.BUTTON = newGuiTag("BUTTON", { BUTTON: "<input type='button' value='${title}' name='${model}' onClick='getModelElementFromDivID(\"${id}\").refresh();return false;' />" });
+guiTag.BUTTON = newGuiTag("BUTTON", { BUTTON: "<input  id='${id}'  ${styleOut}  type='button' value='${title}' name='${model}' onClick='JanusJS.getModelElementFromDivID(\"${id}\").refresh();return false;' />" });
 guiTag.BUTTON.fill = simpleFill;
 guiTag.BUTTON.configure  = doNothing;
 
-guiTag.DATEFIELD = newGuiTag("DATEFIELD", { DATEFIELD: "<input type='date' name='${model}' value='${value}' />" });
+guiTag.DATEFIELD = newGuiTag("DATEFIELD", { DATEFIELD: "<input   id='${id}'  ${styleOut}  class='input-control text' type='date' name='${model}' value='${value}' onkeypress=\"return JanusJS.setElementValueEnter(event,'${id}',this.value);\" />" });
 guiTag.DATEFIELD.fill = simpleFill;
 guiTag.DATEFIELD.configure  = doNothing;
 
 
-guiTag.MONEYFIELD = newGuiTag("MONEYFIELD", { MONEYFIELD: "<input type='number' name='${model}' value='${value}' />" });
+guiTag.MONEYFIELD = newGuiTag("MONEYFIELD", { MONEYFIELD: "<input   id='${id}'  ${styleOut} class='input-control text' type='number' name='${model}' value='${value}' onkeypress=\"return JanusJS.setElementValueEnter(event,'${id}',this.value);\"  />" });
 guiTag.MONEYFIELD.fill = simpleFill;
 guiTag.MONEYFIELD.configure  = doNothing;
 
 
-guiTag.INTEGERFIELD = newGuiTag("INTEGERFIELD", { INTEGERFIELD: "<input type='number'pattern='^[0-9]+$' name='${model}' value='${value}' />" });
+guiTag.INTEGERFIELD = newGuiTag("INTEGERFIELD", { INTEGERFIELD: "<input   id='${id}'  ${styleOut} class='input-control text' type='number' pattern='^[0-9]+$' name='${model}' value='${value}' onkeypress=\"return JanusJS.setElementValueEnter(event,'${id}',this.value);\" />" });
 guiTag.INTEGERFIELD.fill = simpleFill;
 guiTag.INTEGERFIELD.configure  = doNothing;
 
 
-guiTag.PASSWORD = newGuiTag("PASSWORD", { PASSWORD: "<input type='password' name='${model}' value='${value}' />" });
+guiTag.PASSWORD = newGuiTag("PASSWORD", { PASSWORD: "<input   id='${id}'   ${styleOut}  class='input-control password' type='password' name='${model}' value='${value}' onkeypress=\"return JanusJS.setElementValueEnter(event,'${id}',this.value);\" />" });
 guiTag.PASSWORD.fill = simpleFill;
 guiTag.PASSWORD.configure  = doNothing;
 
 
 
-guiTag.CHECKBOX = newGuiTag("CHECKBOX", { TEXTFIELD: "<label class='input-control checkbox small-check'><input type='checkbox' name='${model}' value='${value}' /><span class='check'></span><span class='caption'>${title}</span></label>" });
+guiTag.CHECKBOX = newGuiTag("CHECKBOX", { TEXTFIELD: "<label   id='${id}'  ${styleOut}  class='input-control checkbox small-check'><input type='checkbox' name='${model}' value='${value}' /><span class='check'></span><span class='caption'>${title}</span></label>" });
 guiTag.CHECKBOX.fill = simpleFill;
 guiTag.CHECKBOX.configure  = doNothing;
 
-guiTag.VBOX = newGuiTag("VBOX", { start: "<TABLE>", child: "<TR><TD>${child}</TD></TR>", end: "</TABLE>" });
+guiTag.VBOX = newGuiTag("VBOX", { start: "<TABLE id='${id}'  ${styleOut}  >", child: "<TR><TD>${child}</TD></TR>", end: "</TABLE>" });
 guiTag.VBOX.fill  = startChildEndFill;
 guiTag.VBOX.configure  = doNothing;
 
-guiTag.HBOX = newGuiTag("HBOX", { start: "<TABLE><TR>", child: "<TD>${child}</TD>", end: "</TR></TABLE>" });
+guiTag.HBOX = newGuiTag("HBOX", { start: "<TABLE  id='${id}'  ${styleOut} ><TR>", child: "<TD>${child}</TD>", end: "</TR></TABLE>" });
 guiTag.HBOX.fill  = startChildEndFill;
 guiTag.HBOX.configure  = doNothing;
 
 
 guiTag.SHOWTABLE = newGuiTag("SHOWTABLE", { 
-	start: "<TABLE class='table striped hovered border bordered' ><THEAD>", 
+	start: "<TABLE  id='${id}' class='table striped hovered border bordered' ${styleOut}  ><THEAD>", 
 	headerStart: "<TR><TD> </TD>", 
 	header: "<TH>${header}</TH>",
 	headerEnd: "</TR></THEAD><TBODY>",
 
-	rowStart: "<TR><TD  onClick=\"return setCurrentRow('${id}',${row});\"  >${row}</TD>", 
-	cell: "<TD onClick=\"return setCurrentRow('${id}',${row});\" >${value}</TD>",
+	rowStart: "<TR><TD  onClick=\"return JanusJS.setCurrentRow('${id}',${row});\"  >${row}</TD>", 
+	cell: "<TD onClick=\"return JanusJS.setCurrentRow('${id}',${row});\" >${value}</TD>",
 	rowEnd: "</TR>",
 	
 	rowStartSelected: "<TR class='selected' ><TD>${row}</TD>", 
@@ -764,7 +831,7 @@ guiTag.SHOWCOLUMN.configure  = function () {
 }
 
 guiTag.COMBO = newGuiTag("COMBO", { 
-	start: "<div class='input-control select'  ><select name='${model}' onchange=\"setCurrentRow('${id}',this.selectedIndex);return true;\" >", 
+	start: "<div  id='${id}' class='input-control select'  ${styleOut}   ><select name='${model}' onchange=\"JanusJS.setCurrentRow('${id}',this.selectedIndex);return true;\" >", 
 	row: "<option value='${row}' >${text}</option>",
 	rowSelected: "<option value='${row}' selected >${text}</option>",
 	end: "</select></div>" });
@@ -775,9 +842,10 @@ guiTag.COMBO.configure  = doNothing;
 
 guiTag.RADIO = newGuiTag("RADIO", { 
 	start: "", 
-	row: " <label class='input-control radio small-check'> <input type='radio' name='${model}' value='${row}' onchange=\"return setCurrentRow('${id}',this.value);\" > <span class='check'></span><span class='caption'>${text}</span></label>",
-//	rowSelected: "<input type='radio' name='${model}' value='${row}' checked >${text}<br/>",
-	rowSelected: " <label class='input-control radio small-check'> <input type='radio' name='${model}' checked value='${row}' onchange=\"return setCurrentRow('${id}',this.value);\" > <span class='check'></span><span class='caption'>${text}</span></label>",
+	row: " <label  id='${id}' class='input-control radio small-check'  ${styleOut} > <input type='radio' name='${model}' value='${row}' onchange=\"return JanusJS.setCurrentRow('${id}',this.value);\" > <span class='check'></span><span class='caption'>${text}</span></label>",
+// rowSelected: "<input type='radio' name='${model}' value='${row}' checked
+// >${text}<br/>",
+	rowSelected: " <label  id='${id}'  class='input-control radio small-check'  ${styleOut} > <input type='radio' name='${model}' checked value='${row}' onchange=\"return JanusJS.setCurrentRow('${id}',this.value);\" > <span class='check'></span><span class='caption'>${text}</span></label>",
 	
 	end: "" });
 guiTag.RADIO.fill  = fillRowsFromList;
@@ -785,16 +853,18 @@ guiTag.RADIO.configure  = doNothing;
 
 
 guiTag.LIST = newGuiTag("LIST", { 
-//	start: "<input list='listValues${id}'  name='${model}' onchange=\"return setCurrentRow('${id}',this.value);\" ><datalist id='listValues${id}' >", 
-//	row: "<option value='${row}' >${text}</option>",
-//	rowSelected: "<option value='${row}' selected >${text}</option>",
-//	end: "</datalist>"
+// start: "<input list='listValues${id}' name='${model}' onchange=\"return
+// JanusJS.setCurrentRow('${id}',this.value);\" ><datalist id='listValues${id}'
+// >",
+// row: "<option value='${row}' >${text}</option>",
+// rowSelected: "<option value='${row}' selected >${text}</option>",
+// end: "</datalist>"
 		
 	
 	
-		start: " <div class='listview set-border'  id='listValues${id}' >", 
-		row: "<div class='list'   onClick=\"return setCurrentRow('${id}','${row}');\" ><span class='list-title'>${text}</span></div>",
-		rowSelected: "<div class='list block-shadow-info' onClick=\"return setCurrentRow('${id}','${row}');\" > </span><span class='list-title'>${text}</span></div>",
+		start: " <div  id='${id}' class='listview set-border'  id='listValues${id}'  ${styleOut} >", 
+		row: "<div class='list'   onClick=\"return JanusJS.setCurrentRow('${id}','${row}');\" ><span class='list-title'>${text}</span></div>",
+		rowSelected: "<div class='list block-shadow-info' onClick=\"return JanusJS.setCurrentRow('${id}','${row}');\" > </span><span class='list-title'>${text}</span></div>",
 		end: "</div>"		
 		
 });
@@ -806,7 +876,7 @@ guiTag.MENUBAR  = newGuiTag("MENUBAR", { start: "<nav class='app-bar' ><ul class
 guiTag.MENUBAR.fill  = startChildEndFill;
 guiTag.MENUBAR.configure  = doNothing;
 
-guiTag.MENU  = newGuiTag("MENU", { start: "<li  class='cmenu' ><a href='' class='dropdown-toggle' >${title}</a><ul  class='d-menu' data-role='dropdown'>", child: "${child}", end: "</ul></li>" });
+guiTag.MENU  = newGuiTag("MENU", { start: "<li  class='cmenu'  ${styleOut}  ><a href='' class='dropdown-toggle' >${title}</a><ul  class='d-menu' data-role='dropdown'>", child: "${child}", end: "</ul></li>" });
 guiTag.MENU.startChildEndFill  = startChildEndFill;
 guiTag.MENU.fill  = function ( values) {
 	values.title = this.attributes.title;
@@ -815,7 +885,7 @@ guiTag.MENU.fill  = function ( values) {
 guiTag.MENU.configure  = doNothing;
 
        
-guiTag.MENUITEM  = newGuiTag("MENUITEM", { MENUITEM: "<li ><a href='#'    onClick='getModelElementFromDivID(\"${id}\").refresh();return false;' >${title}</a></li>" });
+guiTag.MENUITEM  = newGuiTag("MENUITEM", { MENUITEM: "<li   ${styleOut} ><a href='#'    onClick='JanusJS.getModelElementFromDivID(\"${id}\").refresh();return false;' >${title}</a></li>" });
 guiTag.MENUITEM.simpleFill  = simpleFill;
 guiTag.MENUITEM.fill  = function ( values) {
 	values.title = this.attributes.title;
@@ -824,11 +894,12 @@ guiTag.MENUITEM.fill  = function ( values) {
 guiTag.MENUITEM.configure  = doNothing;
 
 guiTag.TAB  = newGuiTag("TAB", { 
-//	header: "<TH onClick='updateTab(\"${parentId}\",\"${id}\");' >${title}</TH>", 
-//	header: "<li class='tabHeaderCell' id='tabHeader${id}' onClick='updateTab(\"${parentId}\",\"${id}\");' >${title}</li>",
-	header: "<li><a href='#${id}' >${title}</a></li>",
+// header: "<TH onClick='updateTab(\"${parentId}\",\"${id}\");' >${title}</TH>",
+// header: "<li class='tabHeaderCell' id='tabHeader${id}'
+// onClick='updateTab(\"${parentId}\",\"${id}\");' >${title}</li>",
+	header: "<li ><a href='#${id}' >${title}</a></li>",
 
-	start: "<DIV class='frame' id='${id}' >", 
+	start: "<DIV class='frame' id='${id}'  ${styleOut} >", 
 	child: "${child}", 
 	end: "</DIV>" } );
 guiTag.TAB.startChildEndFill  = startChildEndFill;
@@ -839,13 +910,13 @@ guiTag.TAB.fill  = function ( values) {
 guiTag.TAB.configure  = doNothing;
 
 guiTag.TABS  = newGuiTag("TABS", { 
-//	start: "<TABLE id='${id}' >", 
-//	end: "</TABLE>", 
-//	headerStart: "<TR>", 
-//	headerEnd: "</TR><TR collspan='${tabCount}' ><TD>",
+// start: "<TABLE id='${id}' >",
+// end: "</TABLE>",
+// headerStart: "<TR>",
+// headerEnd: "</TR><TR collspan='${tabCount}' ><TD>",
 
 	
-	start: "<DIV class='tabcontrol2' data-role='tabcontrol' id='${id}' >", 
+	start: "<DIV class='tabcontrol2' data-role='tabcontrol'  data-save-state='true' id='${id}'  ${styleOut}  >", 
 	end: "</DIV>", 
 	headerStart: "<ul class='tabs' >", 
 	headerEnd: "</ul>",
@@ -855,6 +926,7 @@ guiTag.TABS  = newGuiTag("TABS", {
     } );
 
 guiTag.TABS.fill  = function ( values) {
+	this.needUpdate = false;
     var newValues = this.addId(values);
     
     var start = this.fillTemplate('start',newValues);
@@ -921,10 +993,6 @@ function updateTab( divParent, divTab) {
 var idCounter = 0;
 var allGuiElements = {};
 
-function getModelElementFromDivID ( divID) {
-	return allGuiElements[divID].getModelElement();
-}
-
 function newGuiElement ( proto , attributes, DataSources) {
              var guiElement =  Object.create(proto);
              guiElement.DataSources = DataSources;
@@ -944,6 +1012,14 @@ function newGuiElement ( proto , attributes, DataSources) {
              }
              allGuiElements[guiElement.id] = guiElement;
              
+             guiElement.needUpdate = true;
+             
+             guiElement.valueChanged = function ( ev ) {
+            	 this.needUpdate = true;
+             }
+             guiElement.fillIfNeeded = fillIfNeeded;    
+             
+             guiElement.status = "valid";
              return guiElement; 
 }
 
@@ -971,6 +1047,7 @@ function newGuiElementFromDOM ( element ,  DataSources) {
                  }
              }
              guiElement.configure();
+             guiElement.needUpdate = true;
              return guiElement;
            }
  // alert("" + element.nodeName +" hat keine Zuordnung");
@@ -979,7 +1056,67 @@ function newGuiElementFromDOM ( element ,  DataSources) {
          return undefined;
 }
 
-function buildPage ( element) {
+
+
+function  getModelElement() {
+	var modelName = this.attributes['model'];
+	if (modelName == undefined) {
+		return undefined;
+	}
+	return this.DataSources[modelName];
+}
+
+function bindGuiElement( element, DataSources  ) {
+	var modelElement = element.getModelElement();
+	if (modelElement != undefined) {
+		modelElement.addListener(element);
+	}
+}
+
+function bindGuiChildElements( element,DataSources) {
+	bindGuiElement(element,DataSources);
+	if (element.childs != undefined) {
+		for (var ci = 0;ci< element.childs.length;ci++) {
+			var child = element.childs[ci];
+			bindGuiChildElements(child,DataSources);
+		}
+     }
+}
+
+
+function fillIfNeeded(values,element) {
+	if (element == undefined) {
+		element = this;
+	};
+	if (element.needUpdate) {
+		element.needUpdate = false;
+		var text = element.fill(values);
+		var oldDomElement = document.getElementById(element.id);
+		if (oldDomElement != null && oldDomElement != undefined) {
+			
+			try {
+				if ( oldDomElement.parentNode != undefined) {
+					oldDomElement.parentNode.innerHTML= text;
+				}
+			} catch (e) {
+				alert (e);
+			}
+	
+		}
+	}
+	if (element.childs != undefined) {
+		for (var ci = 0;ci<element.childs.length;ci++) {
+			var child = element.childs[ci];
+  			fillIfNeeded(values,child);
+		}
+    }
+    
+    
+}
+
+return {
+
+	buildPage : function ( element) {
          if (element.nodeType == 1) {
        	   DataSources = {};
 
@@ -998,12 +1135,52 @@ function buildPage ( element) {
            }
            for ( var d of Object.getOwnPropertyNames(DataSources)) {
                DataSources[d].bind(DataSources);
+               createIfThen (DataSources[d], DataSources);
            }
+           bindGuiChildElements(guiElement,DataSources);
+           
+           createIfThen (guiElement, DataSources);
           
            return guiElement;
          }
          alert("" + element.nodeName +" hat keine Zuordnung");
          return undefined;
-}
+	},
+	
+
+	addClassFunction : function( name , f) {
+		classFunctions[name] = f;
+	},
+	
+
+	getModelElementFromDivID : function ( divID) {
+		return allGuiElements[divID].getModelElement();
+	},
 
 
+	setCurrentRow : function ( divID, row ) {
+		// alert( model + row );
+		this.getModelElementFromDivID(divID).setCurrentRow(row);
+		this.updateGui();
+		return false;
+	},
+	
+	setModelElementValue : function ( divID, value ) {
+		this.getModelElementFromDivID(divID).setValue(value);
+		this.updateGui(true);
+		return false;
+	},
+	
+	
+	setElementValueEnter : function (event, divID, value) {
+		if (event.which == 13 || event.keyCode == 13) {
+			this.setModelElementValue(divID, value);
+			return true;
+		}
+		return true;
+	}
+
+	
+};
+
+})();

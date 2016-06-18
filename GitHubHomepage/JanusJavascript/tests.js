@@ -4,7 +4,7 @@ function preparePage (text) {
   parser = new DOMParser();
   xmlDoc = parser.parseFromString(text,"text/xml");
 
-  return buildPage(xmlDoc.documentElement);
+  return JanusJS.buildPage(xmlDoc.documentElement);
 }
 
 
@@ -74,7 +74,7 @@ QUnit.test( "Maptable", function( assert ) {
 });
 
 
-QUnit.test( "table", function( assert ) {
+QUnit.test( "table1", function( assert ) {
 
   var page = preparePage("<DIALOG><TABLE name='sql' > <COLUMN name='a' /> <COLUMN name='b'/> </TABLE><STRING name='a' source='sql.a'/><STRING name='b' source='sql.b' /></DIALOG>");
 
@@ -85,12 +85,27 @@ QUnit.test( "table", function( assert ) {
 
 });
 
+QUnit.test( "table2", function( assert ) {
+	
+	var page = preparePage("<DIALOG><STRING name='a' source='liste.currentRow' /><TABLE name='liste'><COLUMN name='value' /><COLUMN name='text' /></TABLE></DIALOG>");
+	page.DataSources.liste.refresh();
+	page.DataSources.liste.doUpdate = false;
+	page.DataSources.liste.currentRow.setValue(1);
+	
+	assert.equal( page.DataSources.a.value,'1');
+	
+	page.DataSources.liste.currentRow.setValue(0);
+	
+	assert.equal( page.DataSources.a.value,'0');
+	
+	
+});
 
 QUnit.test( "bean", function( assert ) {
 	
   tester = '';	
 	
-  addClassFunction('test', function ( command , values) {
+  JanusJS.addClassFunction('test', function ( command , values) {
 	  tester = command;
 	  testerA = values.aa;
 	  testerB = values.bb;
@@ -109,4 +124,5 @@ QUnit.test( "bean", function( assert ) {
   assert.equal( testerB,'2');
 
 });
+
 
