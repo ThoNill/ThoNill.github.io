@@ -53,7 +53,7 @@ JanusJS.showResult = function(place, text) {
 
 function loadXMLPage(pages, name, initFunction) {
 	$.ajax({
-		url : 'GitHubHomepage/JanusJavascript/pages/' + name + '.xml',
+		url : 'pages/' + name + '.xml',
 		data : '',
 		success : function(data) {
 			try {
