@@ -1,0 +1,15 @@
+<DIALOG>
+	<STRING name='text' default='1'  source="datum,money,int,password" />
+	<STRING name='datum' default='1962-01-30' />
+	<STRING name='money' default='100.00' />
+	<STRING name='int' default='5' />
+	<STRING name='password' default='password' />
+	<VBOX>
+	    <LABEL title="Hier gibt es verschiedene Arten von Feldern."/>
+		<TEXTFIELD model='text1' />
+		<DATEFIELD model='datum1' />
+		<MONEYFIELD model='money' />
+		<INTEGERFIELD model='int' />
+		<PASSWORD model='password' />
+	</VBOX>
+</DIALOG>

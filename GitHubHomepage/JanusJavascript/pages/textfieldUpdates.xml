@@ -1,0 +1,39 @@
+<DIALOG>
+	<STRING name='a1' default='1' />
+	<STRING name='b1' source='a1' />
+	<STRING name='a2' default='1' source="b2" />
+	<STRING name='b2' source='a2' />
+	<STRING name='a3' default='Bitte eine Zahl eingeben' source="b3" />
+	<STRING name='b3' source='a3' />
+	<VBOX>
+		<TABS>
+			<TAB title='Einseitig'>
+				<VBOX>
+					<HBOX>
+						<LABEL title="Sie geben hier einen Text ein" />
+						<TEXTFIELD model='a1' />
+					</HBOX>
+					<HBOX>
+						<LABEL title="und er wird hier angezeigt" />
+						<TEXTFIELD model='b1' />
+					</HBOX>
+				</VBOX>
+			</TAB>
+			<TAB title='Gegenseitig'>
+				<VBOX>
+					<LABEL
+						title="Die Eingabe in einem Feld, wird in das andere Feld kopiert." />
+					<TEXTFIELD model='a2' />
+					<TEXTFIELD model='b2' />
+				</VBOX>
+			</TAB>
+			<TAB title='An- Aus'>
+				<VBOX>
+					<LABEL title="wenn Sie eine Zahl eingeben, erscheint ein zweites Feld" />
+					<TEXTFIELD model='a3' />
+					<TEXTFIELD model='b3' if="[0-9]+" at="a3" />
+				</VBOX>
+			</TAB>
+		</TABS>
+	</VBOX>
+</DIALOG>
