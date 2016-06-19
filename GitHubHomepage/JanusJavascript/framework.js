@@ -1,7 +1,6 @@
 
 var JanusJS = (function () {
-	
-	
+
 	
 
 
@@ -67,8 +66,8 @@ function addListener ( child) {
 var classFunctions = {};
 
 
-function callClassFunction ( name , command, values) {
-	return (classFunctions[name])( command, values);
+function callClassFunction ( name , command, values, callIfOk, callIfError) {
+	return (classFunctions[name])( command, values, callIfOk, callIfError);
 }
 
 var dialogValue = {}
@@ -479,8 +478,8 @@ var dataTag = {
     BEAN :   { 
                bind : function(DataSources) {}, 
                refresh : function() {}, 
-               bean : function ( command, values) {
-                      return callClassFunction(this.className,command, values);    	   
+               bean : function ( command, values, callIfOk, callIfError) {
+                      callClassFunction(this.className,command, values, callIfOk, callIfError);    	   
                },
                configure : function() {
             	   this.className = this.attributes['class'];
@@ -517,7 +516,16 @@ var dataTag = {
                 		 values[name] = value;
                 	   };
                 	 }
-                	 this.value = this.bean.bean( this.command, values );
+                	 
+                	 var obj = this;
+                	 var callIfOk = function ( value) {
+                		 obj.value = value;
+                	 };
+                	 var callIfError = function ( errorText) {
+                		 JanusJS.addError(errorText);
+                	 };
+                	 
+                	 this.bean.bean( this.command, values,callIfOk,callIfError);
                  }, 
                  configure : function( DataSources) {
                 	 this.command = this.attributes['command'];
@@ -570,11 +578,24 @@ function newDataElementFromDOM ( element , prefix, DataSources) {
              dataElement.configure(DataSources);
              return dataElement;
            }
-// alert("" + element.nodeName +" hat keine Zuordnung");
            return undefined;
          }
          return undefined;
 }
+
+
+function sammleVariablen ( text) {
+	var liste = [];
+	
+	var sammler = function ( match, p1, offset, string) {
+		addToArray(liste,p1);
+		return "";
+	}
+	
+	text.replace(/\$\{([^\}]*)\}/g,sammler);
+	
+	return liste;
+}	
 
 function replaceOneValue ( template, key, value ) {
    var searchText = '${' + key +'}';  
@@ -602,9 +623,9 @@ function addId( values) {
         var newValues = Object.create(values); 
         newValues.id = this.id;
         newValues.model = this.model;
-        if (this.model != undefined) {
+        if (this.model) {
         	if (this.DataSources[this.model] == undefined) {
-        		alert("Model " + this.model + " ist nicht definiert")
+        		JanusJS.addError("Modelelement " + this.model + " ist nicht definiert")
         	} else {
         		var m = this.DataSources[this.model];
         		if (m.value != undefined) {
@@ -801,7 +822,7 @@ guiTag.VBOX = newGuiTag("VBOX", { start: "<TABLE id='${id}'  ${styleOut}  >", ch
 guiTag.VBOX.fill  = startChildEndFill;
 guiTag.VBOX.configure  = doNothing;
 
-guiTag.HBOX = newGuiTag("HBOX", { start: "<TABLE  id='${id}'  ${styleOut} ><TR>", child: "<TD>${child}</TD>", end: "</TR></TABLE>" });
+guiTag.HBOX = newGuiTag("HBOX", { start: "<TABLE  id='${id}'  ${styleOut} ><TR>", child: "<TD ><div class='margin10 no-margin-right'>${child}</div></TD>", end: "</TR></TABLE>" });
 guiTag.HBOX.fill  = startChildEndFill;
 guiTag.HBOX.configure  = doNothing;
 
@@ -1099,7 +1120,7 @@ function fillIfNeeded(values,element) {
 					oldDomElement.parentNode.innerHTML= text;
 				}
 			} catch (e) {
-				alert (e);
+				JanusJS.addError('Ein HTML Abschnitt kann nicht eingesetzt werden<br'+e);
 			}
 	
 		}
@@ -1128,7 +1149,7 @@ return {
               var c = element.childNodes.item(i); 
               if (c.nodeType == 1) {
                  var source = newDataElementFromDOM(c,'',DataSources);
-                 if (source != undefined) {
+                 if (source) {
                     guiElement.data.addChild(source);
                  }
               }
@@ -1143,7 +1164,7 @@ return {
           
            return guiElement;
          }
-         alert("" + element.nodeName +" hat keine Zuordnung");
+         JanusJS.addError("" + element.nodeName +" hat keine Zuordnung");
          return undefined;
 	},
 	
@@ -1161,7 +1182,7 @@ return {
 	setCurrentRow : function ( divID, row ) {
 		// alert( model + row );
 		this.getModelElementFromDivID(divID).setCurrentRow(row);
-		this.updateGui();
+		this.updateGui(true);
 		return false;
 	},
 	

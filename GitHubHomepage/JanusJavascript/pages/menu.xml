@@ -7,6 +7,10 @@
 		<CALL name='listen' command='listen' />
 		<CALL name='seite1' command='seite1' />
 	</BEAN>
+	<BEAN name='menuBean2' class='spaetLaden'>
+		<CALL name='fehler1' command='seiteMitFehler1' />
+		<CALL name='fehler2' command='seiteMitFehler2' />
+	</BEAN>
 	<MENUBAR>
 		<MENU title='Beispiele'>
 			<MENUITEM title='Eingabefelder' model='textfield' />
@@ -18,6 +22,10 @@
 		</MENU>
 		<MENU title='Ansichten einer Liste'>
 			<MENUITEM title='Als Combo, Liste, Radio, Tabelle' model='listen' />
+		</MENU>
+		<MENU title='Seiten mit Fehlern'>
+			<MENUITEM title='Modelelement fehlt' model='fehler1' />
+			<MENUITEM title='XML nicht richtig' model='fehler2' />
 		</MENU>
 	</MENUBAR>
 	<!-- <BUTTON model='listen' title='Ansichten einer Liste' /> -->

@@ -4,12 +4,16 @@
 		<COLUMN name='text' />
 	</TABLE>
 	<VBOX>
-		<COMBO model='liste' />
-		<LIST model='liste' />
-		<RADIO model='liste' />
-		<SHOWTABLE model='liste'>
-			<SHOWCOLUMN name='value' header='Wert' />
-			<SHOWCOLUMN name='text' header='Text' />
-		</SHOWTABLE>
+		<HBOX>
+			<VBOX>
+				<COMBO model='liste' />
+				<LIST model='liste' />
+				<RADIO model='liste' />
+			</VBOX>
+			<SHOWTABLE model='liste'>
+				<SHOWCOLUMN name='value' header='Wert' />
+				<SHOWCOLUMN name='text' header='Text' />
+			</SHOWTABLE>
+		</HBOX>
 	</VBOX>
 </DIALOG>
