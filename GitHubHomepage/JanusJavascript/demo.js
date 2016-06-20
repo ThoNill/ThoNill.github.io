@@ -4,13 +4,15 @@ JanusJS.updateGui = function(ifNeeded) {
 	} else {
 		this.showResult('place', activePage.fill({}));
 	}
-	var i = activePage.urtext.toString().indexOf('&lt;VBOX&gt;');
-	if (i >= 0) {
-		this.showResult('dataResult', activePage.urtext.substr(0, i));
-		this.showResult('guiResult', activePage.urtext.substr(i));
-	} else {
-		this.showResult('dataResult', '');
-		this.showResult('guiResult', activePage.urtext);
+	if(activePage.urtext) {
+		var i = activePage.urtext.toString().indexOf('&lt;VBOX&gt;');
+		if (i >= 0) {
+			this.showResult('dataResult', activePage.urtext.substr(0, i));
+			this.showResult('guiResult', activePage.urtext.substr(i));
+		} else {
+			this.showResult('dataResult', '');
+			this.showResult('guiResult', activePage.urtext);
+		}
 	}
 	if (ifNeeded) {
 	} else {
@@ -81,9 +83,11 @@ function preparePage(text) {
 	parser = new DOMParser();
 	xmlDoc = parser.parseFromString(text, "text/xml");
 
-	if (xmlDoc.documentElement.innerHTML.toString().indexOf('parsererror') > 0) {
-		JanusJS.addError(xmlDoc.documentElement.innerHTML);
-		return undefined;
+	if(xmlDoc.documentElement.innerHTML) {
+		if (xmlDoc.documentElement.innerHTML.toString().indexOf('parsererror') > 0) {
+			JanusJS.addError(xmlDoc.documentElement.innerHTML);
+			return undefined;
+		};
 	}
 
 	text = text.replace(/&/g, '&amp;');
@@ -124,6 +128,12 @@ loadXMLPage(pages, 'maptable', function(page) {
 });
 
 loadXMLPage(pages, 'listen', function(page) {
+	page.DataSources.liste.refresh();
+	page.DataSources.liste.doUpdate = false;
+});
+
+
+loadXMLPage(pages, 'listenAuswahl', function(page) {
 	page.DataSources.liste.refresh();
 	page.DataSources.liste.doUpdate = false;
 });

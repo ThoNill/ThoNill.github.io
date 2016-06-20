@@ -1,0 +1,18 @@
+<DIALOG>
+	<TABLE name='liste'>
+		<COLUMN name='value' />
+		<COLUMN name='text' />
+	</TABLE>
+	<VBOX>
+		<HBOX>
+			<VBOX>
+				<TEXTFIELD model='liste.value' />
+				<TEXTFIELD model='liste.text' />
+			</VBOX>
+			<SHOWTABLE model='liste'>
+				<SHOWCOLUMN name='value' header='Wert' />
+				<SHOWCOLUMN name='text' header='Text' />
+			</SHOWTABLE>
+		</HBOX>
+	</VBOX>
+</DIALOG>
