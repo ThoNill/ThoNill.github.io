@@ -133,10 +133,13 @@ function newDataSource ( name , sourceType, attributes, DataSources) {
                 return;
              }
              var ev = this.createEvent ( hint);
-             for (var u of this.listeners) {
-                 if (u.status == 'valid') {  
-                    u.valueChanged(ev);
-                 }
+             if (this.listeners) {
+            	 for(var i = 0; i < this.listeners.length; i++){
+            		var u = this.listeners[i];
+                 	if (u.status == 'valid') {  
+                 		u.valueChanged(ev);
+                 	}
+            	 }
              }
          }
 
@@ -151,7 +154,9 @@ function newDataSource ( name , sourceType, attributes, DataSources) {
             if (names == undefined || names == null) {
                 return;
             };
-            for ( var name of names.split(/,/)) {
+            var namesAsArray = names.split(/,/);
+            for(var i = 0; i < namesAsArray.length; i++){
+            	  var name = namesAsArray[i];
                   this.bindToName(name,DataSources);
             }
          }
@@ -170,7 +175,8 @@ var needUpdate = {
              var kandidat = undefined;
              var keys = Object.getOwnPropertyNames(this.data);
              if (keys != undefined) {
-              for ( var k of keys) {
+              for(var i = 0; i < keys.length; i++){
+            	var k = keys[i];  
                 var u = this.data[k];
                 if (u != undefined && u.status == 'invalid' && 
                    (kandidat == undefined || kandidat.priority > u.priority)) {
@@ -1154,7 +1160,9 @@ return {
                  }
               }
            }
-           for ( var d of Object.getOwnPropertyNames(DataSources)) {
+           var propertyNames = Object.getOwnPropertyNames(DataSources);
+           for (var i = 0; i < propertyNames.length; i++){
+        	   var d = propertyNames[i];
                DataSources[d].bind(DataSources);
                createIfThen (DataSources[d], DataSources);
            }
