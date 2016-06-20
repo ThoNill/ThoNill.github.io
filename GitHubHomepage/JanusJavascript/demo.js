@@ -4,7 +4,7 @@ JanusJS.updateGui = function(ifNeeded) {
 	} else {
 		this.showResult('place', activePage.fill({}));
 	}
-	var i = activePage.urtext.indexOf('&lt;VBOX&gt;');
+	var i = activePage.urtext.toString().indexOf('&lt;VBOX&gt;');
 	if (i >= 0) {
 		this.showResult('dataResult', activePage.urtext.substr(0, i));
 		this.showResult('guiResult', activePage.urtext.substr(i));
@@ -81,7 +81,7 @@ function preparePage(text) {
 	parser = new DOMParser();
 	xmlDoc = parser.parseFromString(text, "text/xml");
 
-	if (xmlDoc.documentElement.innerHTML.indexOf('parsererror') > 0) {
+	if (xmlDoc.documentElement.innerHTML.toString().indexOf('parsererror') > 0) {
 		JanusJS.addError(xmlDoc.documentElement.innerHTML);
 		return undefined;
 	}

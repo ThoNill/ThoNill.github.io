@@ -606,7 +606,7 @@ function sammleVariablen ( text) {
 function replaceOneValue ( template, key, value ) {
    var searchText = '${' + key +'}';  
    var erg = template;  
-   while( erg.indexOf(searchText) >=0) {
+   while( erg.toString().indexOf(searchText) >=0) {
         erg = erg.replace(searchText,value);  
    }
    return erg;
