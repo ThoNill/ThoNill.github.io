@@ -1,11 +1,12 @@
 <!DOCTYPE html>
 <html>
-<head lang="de">
+<head>
 
 <link href="http://www.metroui.org/css/metro.css" rel="stylesheet">
 <link href="http://www.metroui.org/css/metro-icons.css" rel="stylesheet">
 <link href="http://www.metroui.org/css/metro-responsive.css" rel="stylesheet">
 <link href="http://www.metroui.org/css/metro-schemes.css" rel="stylesheet">
+<link href="framework.css?version=1" rel="stylesheet">
 
 <script src="http://www.metroui.org/js/jquery-2.1.3.min.js"></script>
 <script src="http://www.metroui.org/js/metro.js"></script>
@@ -13,12 +14,23 @@
 </head>
 <body>
 	<div class="container page-content">
+	
+	  <div data-role="dialog" id="errorDialog" class="padding20" data-close-button="true" data-type="alert" onclick="hideMetroDialog('#errorDialog');JanusJS.focusNextField();">
+            <h4>Fehler</h4>
+            <p id="errorText"> </p>
+            <input  id='errorButton' type='button' value='Ok' name='${model}' 
+            onClick="hideMetroDialog('#errorDialog');JanusJS.focusNextField();return false;" />
+      </div>
+	
+	
+	
 		<div id="menu">Leider fehlt das Menu</div>
 		<DIV class='tabcontrol2' data-role='tabcontrol' id='demo'>
 			<ul class='tabs'>
 				<li><a href='#guiTab'>Oberfl&auml;che</a></li>
 				<li><a href='#modelTab'>Datenmodel</a></li>
 				<li><a href='#guiSourceTab'>GUI Beschreibung</a></li>
+				<li><a href='#rulesTab'>Validierung</a></li>
 				<li><a href='#licenseTab'>Metro UI Lizenz</a></li>
 			</ul>
 			<DIV class='frames'>
@@ -26,10 +38,10 @@
 					<div id="place">
 					<h3>Willkommen auf dieser Demoseite</h3>
 					
-					Mit einer Men&uuml;auswahl kommen Sie zu verschiedenen Seiten, die
+					Mit einer Menüauswahl kommen Sie zu verschiedenen Seiten, die
 					Ihnen JanusJS vorstellen sollen.
 					<p>
-					Die Beschreibung der Seiten erfolgt in XML, ein Dialog besteht aus dem Datenmodel und den Komponenten der Benutzeroberfl&auml;che.
+					Die Beschreibung der Seiten erfolgt in XML, ein Dialog besteht aus dem Datenmodel und den Komponenten der Benutzeroberfläche.
 					Diese Teile werden jeweils in den Reitern <b>Datenmodel</b> und <b>GUI-Beschreibung</b> angezeigt.
 					
 					
@@ -47,6 +59,9 @@
 				<DIV class='frame' id='guiSourceTab'>
 					<code id="guiResult"></code>
 				</DIV>
+				<DIV class='frame' id='rulesTab'>
+					<code id="validationRules"></code>
+				</DIV>
 				<DIV class='frame' id='licenseTab'>
 					<a href="https://metroui.org.ua/license.html" >zur Metro UI Lizenz</a>
 				</DIV>			
@@ -55,6 +70,8 @@
 	</div>
 </body>
 <script src="testdaten.js"></script>
+<script src="basis.js"></script>
+<script src="rules.js"></script>
 <script src="framework.js"></script>
 <script src="demo.js"></script>
 

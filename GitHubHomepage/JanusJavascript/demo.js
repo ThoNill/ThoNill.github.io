@@ -3,20 +3,23 @@ JanusJS.updateGui = function(ifNeeded) {
 		activePage.fillIfNeeded({});
 	} else {
 		this.showResult('place', activePage.fill({}));
-	}
-	if(activePage.urtext) {
-		var i = activePage.urtext.toString().indexOf('&lt;VBOX&gt;');
-		if (i >= 0) {
-			this.showResult('dataResult', activePage.urtext.substr(0, i));
-			this.showResult('guiResult', activePage.urtext.substr(i));
-		} else {
-			this.showResult('dataResult', '');
-			this.showResult('guiResult', activePage.urtext);
+		if (activePage.urtext) {
+			var i = activePage.urtext.toString().indexOf('&lt;VBOX&gt;');
+			if (i >= 0) {
+				this.showResult('dataResult', activePage.urtext.substr(0, i));
+				this.showResult('guiResult', activePage.urtext.substr(i));
+			} else {
+				this.showResult('dataResult', '');
+				this.showResult('guiResult', activePage.urtext);
+			}
+			if (activePage.DataSources.rules) {
+				this.showResult('validationRules',
+						activePage.DataSources.rules.rules.urtext);
+			} else {
+				this.showResult('validationRules', '');
+			}
+			JanusJS.addMessage("Dialog wird angezeigt");
 		}
-	}
-	if (ifNeeded) {
-	} else {
-		JanusJS.addMessage("Dialog wird angezeigt");
 	}
 }
 
@@ -56,10 +59,12 @@ JanusJS.showResult = function(place, text) {
 function loadXMLPage(pages, name, initFunction) {
 	$.ajax({
 		url : 'pages/' + name + '.xml',
+		name : name,
 		data : '',
 		success : function(data) {
 			try {
 				var page = preparePage(data);
+				page.url = this.name;
 				if (page) {
 					pages[name] = page;
 					initFunction(page);
@@ -83,83 +88,124 @@ function preparePage(text) {
 	parser = new DOMParser();
 	xmlDoc = parser.parseFromString(text, "text/xml");
 
-	if(xmlDoc.documentElement.innerHTML) {
+	if (xmlDoc.documentElement.innerHTML) {
 		if (xmlDoc.documentElement.innerHTML.toString().indexOf('parsererror') > 0) {
 			JanusJS.addError(xmlDoc.documentElement.innerHTML);
 			return undefined;
-		};
+		}
 	}
 
-	text = text.replace(/&/g, '&amp;');
-	text = text.replace(/"/g, '&quot;');
-	text = text.replace(/</g, '&lt;');
-	text = text.replace(/>/g, '&gt;');
-	text = text.replace(/\t/g, '   ');
-	text = text.replace(/ /g, '&nbsp;');
-	text = text.replace(/\n/g, '<br>');
-
 	var page = JanusJS.buildPage(xmlDoc.documentElement);
-	page.urtext = text;
+	page.urtext = escapeTextToShowIt(text);
 	return page;
 }
 
 var pages = {};
 
 loadXMLPage(pages, 'tabs', function(page) {
-	page.DataSources.a.setValue("das ist Tab a");
-	page.DataSources.b.setValue("das ist Tab b");
 });
 
 loadXMLPage(pages, 'textfield', function(page) {
-	page.DataSources.text.refresh();
-	page.DataSources.datum.refresh();
-	page.DataSources.money.refresh();
-	page.DataSources.int.refresh();
-	page.DataSources.password.refresh();
+});
+
+loadXMLPage(pages, 'actions', function(page) {
 });
 
 loadXMLPage(pages, 'textfieldUpdates', function(page) {
-	page.DataSources.a1.refresh();
-	page.DataSources.a2.refresh();
-	page.DataSources.a3.refresh();
 });
 
 loadXMLPage(pages, 'maptable', function(page) {
 });
 
 loadXMLPage(pages, 'listen', function(page) {
-	page.DataSources.liste.refresh();
-	page.DataSources.liste.doUpdate = false;
 });
-
 
 loadXMLPage(pages, 'listenAuswahl', function(page) {
-	page.DataSources.liste.refresh();
-	page.DataSources.liste.doUpdate = false;
 });
+
+loadXMLPage(pages, 'rules', function(page) {
+});
+
+loadXMLPage(pages, 'rezepte', clearRezeptGui);
+
+function setClassOfDomElement(domElement, className) {
+	domElement.className += " " + className;
+}
+
+JanusJS.addClassFunction('setClass', setClassOfDomElement);
+
+function removeClassOfDomElement(domElement, className) {
+	var regexp = new RegExp("(?:^|\\s)" + className + "(?!\\S)");
+	domElement.className = domElement.className.replace(regexp, '');
+}
+
+JanusJS.addClassFunction('removeClass', removeClassOfDomElement);
+
 
 function showActivePage(command, values, callIfOk, callIfError) {
 	var page = pages[command];
 	if (page) {
 		activePage = page;
+		page.callOnVisit();
 		callIfOk();
 		JanusJS.updateGui();
+		if (page.DataSources.rules) {
+			page.DataSources.rules.restart();
+			page.DataSources.rules.refresh();
+		}
 	} else {
 		callIfError('Seite kann nicht angezeigt werden');
 	}
 }
 
-JanusJS.addClassFunction('menuauswahl', showActivePage)
+JanusJS.addClassFunction('menuauswahl', function(command, values, callIfOk,
+		callIfError) {
+	showActivePage(command, values, callIfOk, callIfError);
+	addToHistory(activePage);
+
+});
 
 JanusJS.addClassFunction('spaetLaden', function(command, values, callIfOk,
 		callIfError) {
 
 	loadXMLPage(pages, command, function() {
 		showActivePage(command, values, callIfOk, callIfError);
-
 	});
-})
-
+});
 loadXMLPage(pages, 'menu', function(page) {
 	JanusJS.showResult('menu', page.fill({}));
 });
+
+JanusJS.addClassFunction('rezeptSpeichern', function(command, values, callIfOk,
+		callIfError) {
+
+	JanusJS.addMessage("Rezept gespeichert");
+
+});
+
+JanusJS.addClassFunction('refresh', function(action, callOnOk, callOnError) {
+	action.refresh();
+	if (callOnOk) {
+		callOnOk();
+	}
+})
+
+function clearRezeptGui(page) {
+	page.callOnInit();
+
+}
+
+
+function historyChanged(data) {
+	if (data.state) {
+		showActivePage(data.state, {}, doNothing, doNothing);
+	}
+}
+
+
+function addToHistory(page) {
+	if (page) {
+		window.history.pushState(page.url, null, "#" + page.url);
+	}
+}
+window.addEventListener("popstate", historyChanged, false);

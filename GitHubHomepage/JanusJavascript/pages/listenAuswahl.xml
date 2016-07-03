@@ -1,4 +1,4 @@
-<DIALOG>
+<DIALOG onInit="liste">
 	<TABLE name='liste'>
 		<COLUMN name='value' />
 		<COLUMN name='text' />

@@ -1,0 +1,3 @@
+<RULES>
+ <REGEXP name='first' message='Ein Fehler' re='^[0-9]+$' at='eingabe' move='eingabe' priority='3' />
+</RULES>

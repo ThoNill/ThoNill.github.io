@@ -1,0 +1,13 @@
+<DIALOG>
+	<STRING name='text' default='' />
+
+	<RULES name="regexp">
+		<RSET name='eingabe' var='text' />
+		<STEPPER fields='eingabe' />
+	</RULES>
+
+	<VBOX>
+		<LABEL title="Hier gibt es verschiedene Arten von Feldern." />
+		<TEXTFIELD model='text' />
+	</VBOX>
+</DIALOG>

@@ -1,4 +1,4 @@
-<DIALOG>
+<DIALOG onInit="liste" >
 	<TABLE name='liste'>
 		<COLUMN name='value' />
 		<COLUMN name='text' />
@@ -6,11 +6,11 @@
 	<VBOX>
 		<HBOX>
 			<VBOX>
-				<COMBO model='liste' />
-				<LIST model='liste' />
-				<RADIO model='liste' />
+				<COMBO model='liste' tooltip="Model als Comobox"/>
+				<LIST model='liste' tooltip="Model als Liste" />
+				<RADIO model='liste' tooltip="Model als Radiobuiions" />
 			</VBOX>
-			<SHOWTABLE model='liste'>
+			<SHOWTABLE model='liste'  tooltip="Model als Tabelle">
 				<SHOWCOLUMN name='value' header='Wert' />
 				<SHOWCOLUMN name='text' header='Text' />
 			</SHOWTABLE>

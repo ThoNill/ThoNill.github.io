@@ -1,0 +1,230 @@
+<DIALOG>
+	<STRING name='versichertenName' default='' />
+	<STRING name='versichertenVorname' default='' />
+	<STRING name='geburtsdatum' default='' />
+	<STRING name='kasse' default='' />
+	<STRING name='versichertenNummer' default='' />
+	<STRING name='versichertenStatus' default='' />
+	<STRING name='betriebsstaette' default='' />
+	<STRING name='arztnummer' default='' />
+	<STRING name='ausstellungsdatum' default='' />
+	<STRING name='apotheke' default='' />
+	<STRING name='zuzahlung' default='' />
+	<STRING name='brutto' default='' />
+
+	<STRING name='bvg' default='' />
+	<STRING name='hilfsmittel' default='' />
+	<STRING name='impfstoff' default='' />
+	<STRING name='sprechstundenbedarf' default='' />
+	<STRING name='pflicht' default='' />
+
+	<STRING name='gebuerenfrei' default='' />
+	<STRING name='gebuehrenpflichtig' default='' />
+	<STRING name='noctu' default='' />
+	<STRING name='sonstige' default='' />
+	<STRING name='unfall' default='' />
+	<STRING name='arbeitsunfall' default='' />
+
+	<STRING name='abgabedatum' default='' />
+	<STRING name='unfalltag' default='' />
+	<STRING name='arbeitgeber' default='' />
+
+	<STRING name='verordnung1' default='' />
+	<STRING name='faktor1' default='' />
+	<STRING name='taxe1' default='' />
+	<STRING name='autidem1' default='' />
+
+	<STRING name='verordnung2' default='' />
+	<STRING name='faktor2' default='' />
+	<STRING name='taxe2' default='' />
+	<STRING name='autidem2' default='' />
+
+	<STRING name='verordnung3' default='' />
+	<STRING name='faktor3' default='' />
+	<STRING name='taxe3' default='' />
+	<STRING name='autidem3' default='' />
+
+
+	<RULES name="rezepte">
+		<RSET name='versichertenName' var='versichertenName' />
+		<RSET name='versichertenName2' var='versichertenName' />
+		<RSET name='versichertenVorname' var='versichertenVorname' />
+		<RSET name='geburtsdatum' var='geburtsdatum' />
+		<RSET name='kasse' default='' var='kasse' />
+		<RSET name='versichertenNummer' var='versichertenNummer' />
+		<RSET name='versichertenStatus' var='versichertenStatus' />
+		<RSET name='betriebsstaette' var='betriebsstaette' />
+		<RSET name='arztnummer' var='arztnummer' />
+		<RSET name='ausstellungsdatum' var='ausstellungsdatum' />
+		<RSET name='apotheke' var='apotheke' />
+		<RSET name='zuzahlung' var='zuzahlung' />
+		<RSET name='brutto' var='brutto' />
+
+		<RSET name='gesamtZuzahlung' var='zuzahlung' />
+		<RSET name='gesamtBrutto' var='brutto' />
+
+		<RSET name='bvg' var='bvg' />
+		<RSET name='hilfsmittel' var='hilfsmittel' />
+		<RSET name='impfstoff' var='impfstoff' />
+		<RSET name='sprechstundenbedarf' var='sprechstundenbedarf' />
+		<RSET name='pflicht' var='pflicht' />
+
+		<RSET name='gebuerenfrei' var='gebuerenfrei' />
+		<RSET name='gebuehrenpflichtig' var='gebuehrenpflichtig' />
+		<RSET name='noctu' var='noctu' />
+		<RSET name='sonstige' var='sonstige' />
+		<RSET name='unfall' var='unfall' />
+		<RSET name='arbeitsunfall' var='arbeitsunfall' />
+
+		<RSET name='abgabedatum' var='abgabedatum' />
+		<RSET name='unfalltag' var='unfalltag' />
+		<RSET name='arbeitgeber' var='arbeitgeber' />
+
+		<RSET name='verordnung1' var='verordnung1' />
+		<RSET name='faktor1' var='faktor1' />
+		<RSET name='taxe1' var='taxe1' />
+		<RSET name='autidem1' var='autidem1' />
+
+		<RSET name='verordnung2' var='verordnung2' />
+		<RSET name='faktor2' var='faktor2' />
+		<RSET name='taxe2' var='taxe2' />
+		<RSET name='autidem2' var='autidem2' />
+
+		<RSET name='verordnung3' var='verordnung3' />
+		<RSET name='faktor3' var='faktor3' />
+		<RSET name='taxe3' var='taxe3' />
+		<RSET name='autidem3' var='autidem3' />
+		<RSET name='speichern' var='speichernClearFields' />
+
+		<STEPPER
+			fields="versichertenName,versichertenVorname,geburtsdatum,kasse,versichertenNummer,versichertenName2,versichertenStatus,betriebsstaette,arztnummer,ausstellungsdatum,abgabedatum,apotheke,zuzahlung,brutto,verordnung1,faktor1,taxe1,autidem1,verordnung2,faktor2,taxe2,autidem2,verordnung3,faktor3,taxe3,autidem3,gesamtZuzahlung,gesamtBrutto,speichern" />
+
+	</RULES>
+
+	<ACTION name="speichernClearFields" class='refresh'
+		foreach="speichern,versichertenName,versichertenVorname,geburtsdatum,kasse,versichertenNummer,versichertenStatus,betriebsstaette,arztnummer,ausstellungsdatum,abgabedatum,apotheke,zuzahlung,brutto,verordnung1,faktor1,taxe1,autidem1,verordnung2,faktor2,taxe2,autidem2,verordnung3,faktor3,taxe3,autidem3" />
+
+
+	<BEAN name="speichernBean" class="rezeptSpeichern">
+		<CALL name="speichern" command="speichern">
+			<SET name='versichertenName' var='versichertenName' />
+			<SET name='versichertenVorname' var='versichertenVorname' />
+			<SET name='geburtsdatum' var='geburtsdatum' />
+			<SET name='kasse' default='' var='kasse' />
+			<SET name='versichertenNummer' var='versichertenNummer' />
+			<SET name='versichertenStatus' var='versichertenStatus' />
+			<SET name='betriebsstaette' var='betriebsstaette' />
+			<SET name='arztnummer' var='arztnummer' />
+			<SET name='ausstellungsdatum' var='ausstellungsdatum' />
+			<SET name='apotheke' var='apotheke' />
+			<SET name='zuzahlung' var='zuzahlung' />
+			<SET name='brutto' var='brutto' />
+			<SET name='bvg' var='bvg' />
+			<SET name='hilfsmittel' var='hilfsmittel' />
+			<SET name='impfstoff' var='impfstoff' />
+			<SET name='sprechstundenbedarf' var='sprechstundenbedarf' />
+			<SET name='pflicht' var='pflicht' />
+			<SET name='gebuerenfrei' var='gebuerenfrei' />
+			<SET name='gebuehrenpflichtig' var='gebuehrenpflichtig' />
+			<SET name='noctu' var='noctu' />
+			<SET name='sonstige' var='sonstige' />
+			<SET name='unfall' var='unfall' />
+			<SET name='arbeitsunfall' var='arbeitsunfall' />
+			<SET name='abgabedatum' var='abgabedatum' />
+			<SET name='unfalltag' var='unfalltag' />
+			<SET name='arbeitgeber' var='arbeitgeber' />
+			<SET name='verordnung1' var='verordnung1' />
+			<SET name='faktor1' var='faktor1' />
+			<SET name='taxe1' var='taxe1' />
+			<SET name='autidem1' var='autidem1' />
+			<SET name='verordnung2' var='verordnung2' />
+			<SET name='faktor2' var='faktor2' />
+			<SET name='taxe2' var='taxe2' />
+			<SET name='autidem2' var='autidem2' />
+			<SET name='verordnung3' var='verordnung3' />
+			<SET name='faktor3' var='faktor3' />
+			<SET name='taxe3' var='taxe3' />
+			<SET name='autidem3' var='autidem3' />
+		</CALL>
+	</BEAN>
+
+
+	<VBOX>
+		<HBOX>
+			<VBOX>
+				<CHECKBOX model='gebuerenfrei' title=''  tooltip="Gebührenfrei" />
+				<CHECKBOX model='gebuehrenpflichtig' title=''   tooltip="Gebührenpflichtig" />
+				<CHECKBOX model='noctu' title=''   tooltip="Noctu" />
+				<CHECKBOX model='sonstige' title=''   tooltip="Sonstige" />
+				<CHECKBOX model='unfall' title=''   tooltip="Unfall" />
+				<CHECKBOX model='arbeitsunfall' title=''   tooltip="Arbeitsunfall" />
+			</VBOX>
+			<VBOX>
+				<HBOX>
+					<TEXTFIELD model='versichertenName' tooltip="Name des Versicherten" />
+					<TEXTFIELD model='versichertenVorname' tooltip="Vorname des Versicherten" />
+					<DATEFIELD model='geburtsdatum' tooltip="Geburtsdatum" />
+				</HBOX>
+
+				<HBOX>
+					<INTEGERFIELD model='kasse' tooltip="IK der Krankenversicherung" />
+					<TEXTFIELD model='versichertenNummer' tooltip="Versichertennummer" />
+					<TEXTFIELD model='versichertenStatus' tooltip="Versichertenstatus" />
+				</HBOX>
+
+				<HBOX>
+					<INTEGERFIELD model='betriebsstaette' tooltip="Betriebstätte" />
+					<INTEGERFIELD model='arztnummer' tooltip="Arztnummer" />
+					<DATEFIELD model='ausstellungsdatum' tooltip="Ausstellungsdatum der Verordnung" />
+				</HBOX>
+
+				<HBOX>
+					<DATEFIELD model='abgabedatum' tooltip="Abgabedatum der Verordnung" />
+				</HBOX>
+				<HBOX>
+					<DATEFIELD model='unfalltag' tooltip="Unfalltag" />
+					<TEXTFIELD model='arbeitgeber' tooltip="Arbeitgeber" />
+				</HBOX>
+			</VBOX>
+			<VBOX>
+				<HBOX>
+					<CHECKBOX model='bvg' title='BVG'   tooltip="BVG" />
+					<CHECKBOX model='hilfsmittel' title='7'   tooltip="Hilfsmittel" />
+					<CHECKBOX model='impfstoff' title='8'   tooltip="Impfstoff" />
+					<CHECKBOX model='sprechstundenbedarf' title='9'   tooltip="Sprechstundenbadarf" />
+					<CHECKBOX model='pflicht' title='pfl.'   tooltip="Zuzahlungspflicht" />
+					<INTEGERFIELD model='apotheke' tooltip="IK Nummer der Apotheke"/>
+				</HBOX>
+
+
+				<HBOX>
+					<MONEYFIELD model='zuzahlung' tooltip="gesetzliche Zuzahlung" />
+					<MONEYFIELD model='brutto' tooltip="Gesamtbetrag" />
+				</HBOX>
+				<HBOX>
+					<TEXTFIELD model='verordnung1' tooltip="Pharmazentralnummer" />
+					<INTEGERFIELD model='faktor1' tooltip="Faktor" />
+					<MONEYFIELD model='taxe1' tooltip="Taxe" />
+					<CHECKBOX model='autidem1' title='' tooltip="Autidem"/>
+				</HBOX>
+
+				<HBOX>
+					<TEXTFIELD model='verordnung2' tooltip="Pharmazentralnummer" />
+					<INTEGERFIELD model='faktor2' tooltip="Faktor" />
+					<MONEYFIELD model='taxe2' tooltip="Taxe" />
+					<CHECKBOX model='autidem2' title='' tooltip="Autidem"/>
+				</HBOX>
+				<HBOX>
+					<TEXTFIELD model='verordnung3' tooltip="Pharmazentralnummer" />
+					<INTEGERFIELD model='faktor3' tooltip="Faktor" />
+					<MONEYFIELD model='taxe3' tooltip="Taxe" />
+					<CHECKBOX model='autidem3' title=''   tooltip="Autidem"  />
+				</HBOX>
+				<HBOX>
+					<BUTTON model='speichernClearFields' title='Speichern' />
+				</HBOX>
+			</VBOX>
+
+		</HBOX>
+	</VBOX>
+</DIALOG>

@@ -1,0 +1,12 @@
+<DIALOG>
+	<STRING name='text' default='Hier wechselt der Rand'   />
+	
+	<GUIACTION name='rotSetzen' foreach='text' param='block-shadow-error' class='setClass' />
+	<GUIACTION name='rotEntfernen' foreach='text' param='block-shadow-error' class='removeClass' />
+	<VBOX>
+	    <BUTTON model='rotSetzen' title='Schatten setzen' />
+	    <BUTTON model='rotEntfernen' title='Schatten entfernen' />
+		<TEXTFIELD model='text' />
+		
+	</VBOX>
+</DIALOG>

@@ -1,0 +1,105 @@
+<RULES>
+ 
+	<MOVE move='versichertenName' />
+	<MOVE move='versichertenVorname' />
+	<MOVE move='geburtsdatum' />
+	<REGEXP message='Bitte ein korrektes Geburtsdatum eingeben'
+		re='^(|(19|20)[0-9][0-9]\-(0[0-9]|1[0-2])\-[0-3][0-9])$' at='geburtsdatum'
+		move='geburtsdatum' priority='3' />
+
+	<MOVE move='kasse' />
+	<REGEXP message='Bitte ein KassenIK eingeben (9 stellig)' re='^[0-9]{9}$'
+		at='kasse' move='kasse' priority='3' />
+
+	<MOVE move='versichertenNummer' />
+
+	<OR>
+		<REGEXP message='Bitte ein Versichertennummer oder Namen eingeben'
+			re='[0-9]' at='versichertenNummer' move='versichertenNummer,versichertenName2'
+			priority='3' />
+		<REGEXP message='Bitte ein Versichertennamen eingeben' re='[A-Za-z]'
+			at='versichertenName2' move='versichertenName2' priority='3' />
+	</OR>
+
+	<MOVE move='versichertenStatus' />
+	<MOVE move='betriebsstaette' />
+	<MOVE move='arztnummer' />
+	<MOVE move='ausstellungsdatum' />
+	<REGEXP message='Bitte ein Ausstellungsdatum eingeben' re='^20[0-9][0-9]\-(0[0-9]|1[0-2])\-[0-3][0-9]$'
+		at='ausstellungsdatum' move='ausstellungsdatum' priority='3' />
+
+	<MOVE move='apotheke' />
+	<REGEXP message='Bitte ein ApothekenIK eingeben (9 stellig)' re='^[0-9]{9}$'
+		at='apotheke' move='apotheke' priority='3' />
+
+	<MOVE move='zuzahlung' />
+	<MOVE move='brutto' />
+	<MOVE move='abgabedatum' />
+	<REGEXP message='Bitte ein Abgabedatum eingeben' re='^20[0-9][0-9]\-(0[0-9]|1[0-2])\-[0-3][0-9]$'
+		at='abgabedatum' move='abgabedatum' priority='3' />
+
+	<COMP message='Die  Ausstellung liegt nach der Abgabe' a='abgabedatum'
+		b='ausstellungsdatum' rel='ge' move='abgabedatum,ausstellungsdatum'
+		priority='3' />
+
+	<MOVE move='verordnung1' />
+	<REGEXP message='Bitte ein PZN eingeben (7 stellig)' re='^[0-9]{7}$'
+		at='verordnung1' move='verordnung1' priority='3' />
+
+	<MOVE move='faktor1' />
+	<REGEXP message='Bitte einen Faktor eingeben (3 stellig)' re='^[0-9]{1,3}$'
+		at='faktor1' move='faktor1' priority='3' />
+
+	<MOVE move='taxe1' />
+
+	<REGEXP message='Taxe ist eine Zahl' re='^(|[0-9\.]*)$' at='taxe1'
+		move='taxe1' priority='3' />
+	<REGEXP message='Taxe ist eine Zahl' re='^(|[0-9\.]*)$' at='taxe2'
+		move='taxe2' priority='3' />
+	<REGEXP message='Taxe ist eine Zahl' re='^(|[0-9\.]*)$' at='taxe3'
+		move='taxe3' priority='3' />
+
+	<MOVE move='verordnung2' />
+	<REGEXP message='Bitte ein PZN eingeben (7 stellig)' re='^[0-9]+$'
+		at='verordnung2' move='verordnung2' priority='1'>
+		<TRUE>
+			<REGEXP message='Bitte ein korrekte PZN eingeben (7 stellig)'
+				re='^[0-9]{7}$' at='verordnung2' move='verordnung2' priority='3' />
+			<MOVE move='faktor2' />
+			<REGEXP message='Bitte einen Faktor eingeben (3 stellig)' re='^[0-9]{1,3}$'
+				at='faktor2' move='faktor2' priority='3' />
+			<MOVE move='taxe2' />
+
+			<MOVE move='verordnung3' />
+			<REGEXP message='Bitte ein PZN eingeben (7 stellig)' re='^[0-9]+$'
+				at='verordnung3' move='verordnung3' priority='1'>
+				<TRUE>
+					<REGEXP message='Bitte ein korrekte PZN eingeben (7 stellig)'
+						re='^[0-9]{7}$' at='verordnung3' move='verordnung3' priority='3' />
+					<MOVE move='faktor3' />
+					<REGEXP message='Bitte einen Faktor eingeben (3 stellig)'
+						re='^[0-9]{1,3}$' at='faktor3' move='faktor3' priority='3' />
+					<MOVE move='taxe3' />
+				</TRUE>
+			</REGEXP>
+		</TRUE>
+	</REGEXP>
+
+
+	<MOVE move='gesamtZuzahlung' />
+	<MOVE move='gesamtBrutto' />
+	<COMP message='Die  Gesamtsumme ist zu klein' a='gesamtBrutto'
+		summe='taxe1,taxe2,taxe3' rel='ge' move='gesamtBrutto,taxe1,taxe2,taxe3'
+		priority='3' type="number"/>
+	<COMP message='Die  Gesamtsumme ist zu groß' a='gesamtBrutto'
+		summe='taxe1,taxe2,taxe3' rel='le' zugabe="5" move='gesamtBrutto,taxe1,taxe2,taxe3'
+		priority='3' type="number"/>		
+		
+	<COMP message='Die Zuzahlung ist höher als das Brutto' a='gesamtBrutto'
+		b='gesamtZuzahlung' rel='ge' move='gesamtBrutto,gesamtZuzahlung'
+		priority='3' type="number"/>
+
+
+
+	<MOVE move='speichern' />
+</RULES>
