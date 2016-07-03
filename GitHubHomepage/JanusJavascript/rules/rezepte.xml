@@ -22,6 +22,9 @@
 	</OR>
 
 	<MOVE move='versichertenStatus' />
+	<REGEXP message='Bitte einen Versichertenstatus eingeben' re='^[135](000|[1-8][0-9][0-9])[146789DFACSPENMXKL]$'
+		at='versichertenStatus' move='versichertenStatus' priority='3' />
+	
 	<MOVE move='betriebsstaette' />
 	<MOVE move='arztnummer' />
 	<MOVE move='ausstellungsdatum' />
