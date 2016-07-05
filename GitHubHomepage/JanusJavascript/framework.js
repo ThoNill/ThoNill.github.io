@@ -1637,6 +1637,9 @@ var JanusJS = (function() {
 		setElementDateValueEnter : function(event, divID, obj) {
 			var value = obj.value;
 			var keyCode = event.keyCode;
+			if (keyCode == 0 || keyCode == undefined) {
+				keyCode = event.which;
+			}
 			if (keyCode >= 48 && keyCode <= 57) {
 				var c = String.fromCharCode(keyCode);
 				var l = value.length;
