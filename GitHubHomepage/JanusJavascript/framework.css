@@ -8,23 +8,20 @@ input:focus {
 }
 
 .hbox {
-	display: -moz-box; /* Mozilla */
-	display: -webkit-box; /* WebKit */
-	display: box; /* As specified */
-	/* Children should be oriented vertically */
-	-moz-box-orient: horizontal; /* Mozilla */
-	-webkit-box-orient: horizontal; /* WebKit */
-	box-orient: horizontal; /* As specified */
-/*	background-color: lime; */
+     display: -webkit-flex;
+     -webkit-flex-direction: row;
+     align-items: center;
+	
+	 display: flex;
+     flex-direction: row;
 }
 
 .vbox {
-	display: -moz-box; /* Mozilla */
-	display: -webkit-box; /* WebKit */
-	display: box; /* As specified */
-	/* Children should be oriented vertically */
-	-moz-box-orient: vertical; /* Mozilla */
-	-webkit-box-orient: vertical; /* WebKit */
-	box-orient: vertical; /* As specified */
+    display: -webkit-flex;
+      -webkit-flex-direction: column;
+    align-items: flex-start;
+
 	
+	 display: flex;
+     flex-direction: column;
 }
