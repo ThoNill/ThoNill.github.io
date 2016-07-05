@@ -970,7 +970,7 @@ var JanusJS = (function() {
 		newValues.endTooltip = "";
 		
 		if (this.attributes.tooltip) {
-				newValues.startTooltip = "<div data-role='hint' data-hint='" + this.attributes.tooltip + "'>";
+				newValues.startTooltip = "<div data-role='hint' data-hint-position='top' data-hint='" + this.attributes.tooltip + "'>";
 				newValues.endTooltip = "</div>";
 		}
 
@@ -1170,7 +1170,7 @@ var JanusJS = (function() {
 			"DATEFIELD",
 			{
 //				DATEFIELD : "<div  id='${id}' ${styleOut}  >${startTooltip}<input   id='ip${id}' ${styleOut}  class='input-control text margin10 no-margin-right ' type='date' name='${model}' value='${value}' onkeypress=\"return JanusJS.setElementValueEnter(event,'${id}',this.value);\" />${endTooltip}</div>"
-				DATEFIELD : "<div  id='${id}' class='margin10 no-margin-right' >${startTooltip}<div ${styleOut}  class='input-control text' data-role='datepicker' data-format='dd.mm.yyyy' ><input   id='ip${id}' ${styleOut}  type='text' name='${model}' value='${value}' onkeypress=\"return JanusJS.setElementValueEnter(event,'${id}',this.value);\" /> <button class='button'><span class='mif-calendar'></span></button>${endTooltip}</div></div>"
+				DATEFIELD : "<div  id='${id}' class='margin10 no-margin-right' >${startTooltip}<div ${styleOut}  class='input-control text' data-role='datepicker' data-format='dd.mm.yyyy' ><input   id='ip${id}' ${styleOut}  type='text' name='${model}' value='${value}' onkeypress=\"return JanusJS.setElementValueEnter(event,'${id}',this.value);\" /> <button class='button'  onkeypress=\"return JanusJS.setElementValueEnter(event,'${id}',this.value);\" ><span class='mif-calendar'></span></button>${endTooltip}</div></div>"
 
 			});
 	guiTag.DATEFIELD.fill = simpleFill;
