@@ -1169,8 +1169,12 @@ var JanusJS = (function() {
 	guiTag.DATEFIELD = newGuiTag(
 			"DATEFIELD",
 			{
-//				DATEFIELD : "<div  id='${id}' ${styleOut}  >${startTooltip}<input   id='ip${id}' ${styleOut}  class='input-control text margin10 no-margin-right ' type='date' name='${model}' value='${value}' onkeypress=\"return JanusJS.setElementValueEnter(event,'${id}',this.value);\" />${endTooltip}</div>"
-				DATEFIELD : "<div  id='${id}' class='margin10 no-margin-right' >${startTooltip}<div ${styleOut}  class='input-control text' data-role='datepicker' data-format='dd.mm.yyyy' ><input   id='ip${id}' ${styleOut}  type='text' name='${model}' value='${value}' onkeypress=\"return JanusJS.setElementValueEnter(event,'${id}',this.value);\" /> <button class='button'  onkeypress=\"return JanusJS.setElementValueEnter(event,'${id}',this.value);\" ><span class='mif-calendar'></span></button>${endTooltip}</div></div>"
+// DATEFIELD : "<div id='${id}' ${styleOut} >${startTooltip}<input id='ip${id}'
+// ${styleOut} class='input-control text margin10 no-margin-right ' type='date'
+// name='${model}' value='${value}' onkeypress=\"return
+// JanusJS.setElementValueEnter(event,'${id}',this.value);\"
+// />${endTooltip}</div>"
+				DATEFIELD : "<div  id='${id}' class='margin10 no-margin-right' >${startTooltip}<div ${styleOut}  class='input-control text' data-role='datepicker' data-format='dd.mm.yyyy' ><input   id='ip${id}' ${styleOut}  type='text' name='${model}' value='${value}' onkeypress=\"return JanusJS.setElementDateValueEnter(event,'${id}',this);\" /> <button class='button'><span class='mif-calendar'></span></button>${endTooltip}</div></div>"
 
 			});
 	guiTag.DATEFIELD.fill = simpleFill;
@@ -1208,12 +1212,9 @@ var JanusJS = (function() {
 	guiTag.CHECKBOX.fill = simpleFill;
 	guiTag.CHECKBOX.configure = doNothing;
 /*
-	guiTag.VBOX = newGuiTag("VBOX", {
-		start : "<TABLE id='${id}'  ${styleOut}  >",
-		child : "<TR><TD>${child}</TD></TR>",
-		end : "</TABLE>"
-	});
-	*/
+ * guiTag.VBOX = newGuiTag("VBOX", { start : "<TABLE id='${id}' ${styleOut} >",
+ * child : "<TR><TD>${child}</TD></TR>", end : "</TABLE>" });
+ */
 	guiTag.VBOX = newGuiTag("VBOX", {
 		start : "<DIV id='${id}' class='vbox margin10 no-margin-right no-margin-left' ${styleOut}  >",
 		child : "<DIV>${child}</DIV>",
@@ -1223,14 +1224,11 @@ var JanusJS = (function() {
 	guiTag.VBOX.fill = startChildEndFill;
 	guiTag.VBOX.configure = doNothing;
 
-/*	guiTag.HBOX = newGuiTag(
-			"HBOX",
-			{
-				start : "<TABLE  id='${id}'  ${styleOut} ><TR>",
-				child : "<TD ><div class='margin10 no-margin-right'>${child}</div></TD>",
-				end : "</TR></TABLE>"
-			});
-*/
+/*
+ * guiTag.HBOX = newGuiTag( "HBOX", { start : "<TABLE id='${id}' ${styleOut} ><TR>",
+ * child : "<TD ><div class='margin10 no-margin-right'>${child}</div></TD>",
+ * end : "</TR></TABLE>" });
+ */
 	guiTag.HBOX = newGuiTag("HBOX", {
 		start : "<DIV id='${id}' class='hbox' ${styleOut}  >",
 		child : "<DIV>${child}</DIV>",
@@ -1631,6 +1629,71 @@ var JanusJS = (function() {
 		setElementValueEnter : function(event, divID, value) {
 			if (event.which == 13 || event.keyCode == 13) {
 				this.setModelElementValue(divID, value);
+				return true;
+			}
+			return true;
+		},
+		
+		setElementDateValueEnter : function(event, divID, obj) {
+			var value = obj.value;
+			var keyCode = event.keyCode;
+			if (keyCode >= 48 && keyCode <= 57) {
+				var c = String.fromCharCode(keyCode);
+				var l = value.length;
+				
+				keyCode = keyCode - 48;
+				switch (l) {
+				case 0: 
+					if (keyCode <=3) {
+						obj.value = c;
+					} else {
+						obj.value = "0" + c + ".";
+					}
+					break;
+				case 1:
+					if (value == '0' || value == "1" || value == "2" || (value == "3" && keyCode <=1)) {
+						obj.value = value + c + ".";
+					}
+					break;
+				case  2:
+					obj.value = value +  ".";
+					break;
+				case  3:
+					if (keyCode <=1) {
+						obj.value = value +c;
+					} else {
+						obj.value = value +"0" + c + ".";
+					}
+					break;
+				case  4:
+					if (value[3] == '0' || (value[3] == "1" && keyCode <=2)) {
+						obj.value = value + c + ".";
+					}
+					break;
+				case  5:
+					obj.value = value +  ".";
+					break;
+				case  6:
+					if (keyCode == 9) {
+						obj.value = value + "19";
+					} else {
+						obj.value = value + "20" + c;
+					} 
+					break;
+				default:
+					if (l >= 7 && l <= 9) {
+						obj.value = value + c;
+					}
+					break;
+				}
+				return false;
+			}
+			if (keyCode == 13) {
+				this.setModelElementValue(divID, value);
+				return true;
+			}
+			if (keyCode == 46) {
+				obj.value = value.substr(0,value.length-2);
 				return true;
 			}
 			return true;
